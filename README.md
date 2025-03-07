@@ -1,0 +1,1 @@
+# shared-worker-storage
