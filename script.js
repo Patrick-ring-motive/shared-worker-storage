@@ -12,10 +12,16 @@
       onconnect = (event) => {
         const port = [...event.ports].shift();
         (port ?? {}).onmessage = (e) => {
-          const { requestId, type, key, value } = e.data;
+          const {
+            requestId,
+            type,
+            key,
+            value
+          } = e.data;
           const respond = {
             SET: () => port.postMessage({
-              requestId, type: 'SET_RESULT',
+              requestId,
+              type: 'SET_RESULT',
               success: store.set(key, value)
             }),
             GET: () => port.postMessage({
@@ -46,8 +52,19 @@
           this.port.onmessage = (e) => this.onMessage(e);
         }
         onMessage(e) {
-          const { requestId, type, key, value, success } = e.data;
-          this.pendingRequests.get(requestId)?.({ type, key, value, success });
+          const {
+            requestId,
+            type,
+            key,
+            value,
+            success
+          } = e.data;
+          this.pendingRequests.get(requestId)?.({
+            type,
+            key,
+            value,
+            success
+          });
           this.pendingRequests.delete(requestId);
         }
         generateId() {
@@ -57,21 +74,34 @@
           return new Promise((resolve) => {
             const requestId = this.generateId();
             this.pendingRequests.set(requestId, resolve);
-            this.port.postMessage({ requestId, type: 'SET', key, value });
+            this.port.postMessage({
+              requestId,
+              type: 'SET',
+              key,
+              value
+            });
           });
         }
         getItem(key) {
           return new Promise((resolve) => {
             const requestId = this.generateId();
             this.pendingRequests.set(requestId, (msg) => resolve(msg.value));
-            this.port.postMessage({ requestId, type: 'GET', key });
+            this.port.postMessage({
+              requestId,
+              type: 'GET',
+              key
+            });
           });
         }
         removeItem(key) {
           return new Promise((resolve) => {
             const requestId = this.generateId();
             this.pendingRequests.set(requestId, (msg) => resolve(msg.value));
-            this.port.postMessage({ requestId, type: 'DELETE', key });
+            this.port.postMessage({
+              requestId,
+              type: 'DELETE',
+              key
+            });
           });
         }
       }
